@@ -98,6 +98,8 @@ $ npm install decktape
 $ `npm bin`/decktape
 ```
 
+See the <<faq,FAQ>> for troubleshooting / alternatives.
+
 == Usage
 
 [source]
@@ -113,7 +115,7 @@ url          URL of the slides deck
 filename     Filename of the output PDF file
 
 Options:
-   -s <size>, --size <size>        Size of the slides deck viewport: <width>x<height>  (ex. 1280x720)
+   -s <size>, --size <size>        Size of the slides deck viewport: <width>x<height> (e.g. '1280x720')
    -p <ms>, --pause <ms>           Duration in milliseconds before each slide is exported  [1000]
    --load-pause <ms>               Duration in milliseconds between the page has loaded
                                    and starting to export slides  [0]
@@ -215,7 +217,7 @@ The following slide deck examples have been exported using DeckTape:
 
 |http://joshbode.github.io/remark/ansi.html[Coloured Terminal Listings in Remark]
 |remark
-|https://astefanutti.github.io/decktape/examples/remark-js-coloured-terminal.pdf[remark-js-coloured-terminal.pdf] (0.14MB)
+|https://astefanutti.github.io/decktape/examples/remark-js-coloured-terminal.pdf[remark-js-coloured-terminal.pdf] (0.12MB)
 
 |http://www.w3.org/Talks/Tools/Slidy[HTML Slidy: Slide Shows in HTML and XHTML]
 |Slidy
@@ -232,6 +234,10 @@ The following slide deck examples have been exported using DeckTape:
 |http://mikemaccana.github.io/rejectjs2013[Welcome our new ES5 Overloards]
 |Bespoke.js
 |https://astefanutti.github.io/decktape/examples/new-es5-overloards.pdf[new-es5-overloards.pdf] (0.2MB)
+
+|http://stack.formidable.com/spectacle[Spectacle: A ReactJS Presentation Library]
+|Spectacle
+|https://astefanutti.github.io/decktape/examples/spectacle-reactjs-presentation.pdf[spectacle-reactjs-presentation.pdf] (8.9MB)
 |===
 
 == Docker
@@ -244,15 +250,15 @@ For example:
 
 * To convert an online HTML presentation and have it exported into the working directory under the `slides.pdf` filename:
 [source,shell,subs=attributes+]
-$ docker run --rm -v `pwd`:/slides astefanutti/decktape {uri-revealjs} slides.pdf
+$ docker run --rm -t -v `pwd`:/slides astefanutti/decktape {uri-revealjs} slides.pdf
 
 * Or, to convert an HTML presentation that's stored on the local file system in the `home` directory:
 [source,shell]
-$ docker run --rm -v `pwd`:/slides -v ~:/home/user astefanutti/decktape /home/user/slides.html slides.pdf
+$ docker run --rm -t -v `pwd`:/slides -v ~:/home/user astefanutti/decktape /home/user/slides.html slides.pdf
 
 * Or, to convert an HTML presentation that's deployed on the local host:
 [source,shell]
-$ docker run --rm --net=host -v `pwd`:/slides astefanutti/decktape http://localhost:8000 slides.pdf
+$ docker run --rm -t --net=host -v `pwd`:/slides astefanutti/decktape http://localhost:8000 slides.pdf
 
 You may want to specify a tag corresponding to a released version of DeckTape for the Docker image, e.g. `astefanutti/decktape:{decktape-version}`.
 
@@ -272,6 +278,21 @@ $ docker cp `docker ps -lq`:slides/slides.pdf .
 # Finally remove the latest used container
 $ docker rm `docker ps -lq`
 ----
+
+== FAQ
+
+==== Q: How to install prerequisites on Windows?
+
+Open a Powershell prompt in _Run as administrator_ to install Visual Studio Build Tools and Python 2.7:
+
+[source,console]
+----
+$ npm i -g --production windows-build-tools
+----
+
+==== Q: I'm using Arch Linux, is there an AUR package?
+
+Yes, it is available at https://aur.archlinux.org/packages/nodejs-decktape/.
 
 == Plugin API
 

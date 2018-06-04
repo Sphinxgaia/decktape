@@ -14,7 +14,13 @@ exports.options = {
     full    : 'max-slides',
     metavar : '<size>',
     help    : 'Maximum number of slides to export',
-  }
+  },
+  media: {
+    default : 'screen',
+    choices : ['screen', 'print'],
+    metavar : '<media>',
+    help    : 'CSS media type to emulate, one of [print, screen]',
+  },
 };
 
 exports.help =
@@ -34,6 +40,7 @@ class Generic {
     this.currentSlide = 1;
     this.isNextSlideDetected = false;
     this.key = this.options.key || exports.options.key.default;
+    this.media = this.options.media || exports.options.media.default;
   }
 
   getName() {
@@ -45,6 +52,7 @@ class Generic {
   }
 
   async configure() {
+    await this.page.emulateMedia(this.media);
     await this.page.exposeFunction('onMutation', _ => (this.isNextSlideDetected = true));
     await this.page.evaluate(_ =>
       new MutationObserver(_ => window.onMutation()).observe(document, {
@@ -79,7 +87,8 @@ class Generic {
   }
 
   async currentSlideIndex() {
-    const fragment = await this.page.evaluate(_ => window.location.hash.replace(/^#\/?/, ''));
-    return fragment.length ? fragment : this.currentSlide;
+    const hash = await this.page.evaluate(_ => window.location.hash);
+    const [, fragment] = hash.match(/^#\/?([^?]*)/) || [];
+    return fragment || this.currentSlide;
   }
 }

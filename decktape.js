@@ -36,7 +36,7 @@ parser.script('decktape').options({
     type      : 'string',
     callback  : parseSize,
     transform : parseSize,
-    help      : 'Size of the slides deck viewport: <width>x<height>  (ex. \'1280x720\')',
+    help      : 'Size of the slides deck viewport: <width>x<height> (e.g. \'1280x720\')',
   },
   pause : {
     abbr    : 'p',
@@ -104,7 +104,7 @@ function parseSize(size) {
   const match = size.match(/^(\d+)x(\d+)$/);
   if (match) {
     const [, width, height] = match;
-    return { width: parseInt(width, 10), height: parseInt(height, 10)};
+    return { width: parseInt(width, 10), height: parseInt(height, 10) };
   } else {
     return '<size> must follow the <width>x<height> notation, e.g., \'1280x720\'';
   }
@@ -198,14 +198,16 @@ process.on('unhandledRejection', error => {
   page
     .on('console', (...args) => console.log(chalk`{gray ${args}}`))
     .on('pageerror', error => console.log(chalk`\n{red Page error: ${error.message}}`))
-    .on('requestfailed', request => console.log(chalk`\n{keyword('orange') Unable to load resource from URL: ${request.url}}`));
+    .on('requestfailed', request => console.log(chalk`\n{keyword('orange') Unable to load resource from URL: ${request.url()}}`));
 
   console.log('Loading page', options.url, '...');
   const load = page.waitForNavigation({ waitUntil: 'load', timeout: 20000 });
-  page.goto(options.url, { waitUntil: 'networkidle0', timeout: 60000 })
+  page.goto(options.url, { waitUntil: 'networkidle2', timeout: 60000 })
     // wait until the load event is dispatched
-    .then(response => load.catch(error => response.status !== 200 ? Promise.reject(error) : response))
-    .then(response => console.log('Loading page finished with status:', response.status))
+    .then(response => load
+      .catch(error => response.status() !== 200 ? Promise.reject(error) : response)
+      .then(_ => response))
+    .then(response => console.log('Loading page finished with status:', response.status()))
     .then(delay(options.loadPause))
     .then(_ => createPlugin(page))
     .then(plugin => configurePlugin(plugin)
